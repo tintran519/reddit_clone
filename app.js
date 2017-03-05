@@ -6,7 +6,6 @@ MainCtrl.inject = ['$scope']
 
 function MainCtrl($scope){
   $scope.test = "I'm working!!";
-  $scope.blah = 'blah';
   $scope.posts = [
     {title: 'post 1', upvotes: 5},
     {title: 'post 2', upvotes: 2},
@@ -14,4 +13,22 @@ function MainCtrl($scope){
     {title: 'post 4', upvotes: 9},
     {title: 'post 5', upvotes: 4}
   ];
+  $scope.addPost = addPost;
+  $scope.incrementUpvotes = incrementUpvotes;
+
+  function addPost(){
+    if(!$scope.title || $scope.title === '') return;
+    $scope.posts.push({
+      title: $scope.title,
+      link: $scope.link,
+      upvotes: 0
+    });
+    $scope.title = '';
+    $scope.link = '';
+  }
+
+  function incrementUpvotes(post){
+    post.upvotes += 1;
+  }
+
 }
