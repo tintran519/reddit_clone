@@ -1,9 +1,22 @@
-var app = angular.module("reddit_clone", []);
+var app = angular.module("reddit_clone", ['ui.router']);
 
 app.controller("MainCtrl", MainCtrl)
-   .factory('postService',postService);
+   .factory("postService",postService)
+   .config(AppRouter);
 
 MainCtrl.inject = ['$scope']
+AppRouter.inject = ['$stateProvider', '$urlRouterProvider']
+
+function AppRouter($stateProvider,$urlRouterProvider){
+  $urlRouterProvider.otherwise('home');
+
+  $stateProvider
+    .state('home', {
+      url: '/home',
+      templateUrl: '/home.html',
+      controller: 'MainCtrl'
+    });
+}
 
 // service controller
 function postService(){
@@ -20,6 +33,7 @@ function postService(){
   return postService;
 }
 
+// client controller
 function MainCtrl($scope,postService){
   $scope.test = "I'm working!!";
   $scope.posts = postService.posts
