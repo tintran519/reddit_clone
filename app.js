@@ -1,13 +1,18 @@
 var app = angular.module("reddit_clone", ['ui.router']);
 
 app.controller("MainCtrl", MainCtrl)
-   .factory("postService",postService)
+   .factory("postService", postService)
    .config(AppRouter);
 
-MainCtrl.inject = ['$scope']
-AppRouter.inject = ['$stateProvider', '$urlRouterProvider']
+app.controller("PostsCtrl", PostsCtrl)
 
-function AppRouter($stateProvider,$urlRouterProvider){
+// Injections
+MainCtrl.inject = ['$scope', 'postService']
+AppRouter.inject = ['$stateProvider', '$urlRouterProvider']
+PostsCtrl.inject = ['$scope', '$stateParams', 'postService']
+
+// States/Routes
+function AppRouter($stateProvider, $urlRouterProvider){
   $urlRouterProvider.otherwise('home');
 
   $stateProvider
@@ -15,10 +20,15 @@ function AppRouter($stateProvider,$urlRouterProvider){
       url: '/home',
       templateUrl: '/home.html',
       controller: 'MainCtrl'
-    });
+    })
+    .state('posts', {
+      url: '/posts/{id}',
+      templateUrl: '/posts.html',
+      controller: 'PostsCtrl'
+    })
 }
 
-// service controller
+// Service controller
 function postService(){
   var postService = {
     posts: [
@@ -33,7 +43,7 @@ function postService(){
   return postService;
 }
 
-// client controller
+// Main controller
 function MainCtrl($scope,postService){
   $scope.test = "I'm working!!";
   $scope.posts = postService.posts
@@ -45,7 +55,11 @@ function MainCtrl($scope,postService){
     $scope.posts.push({
       title: $scope.title,
       link: $scope.link,
-      upvotes: 0
+      upvotes: 0,
+      comments: [
+        {author: 'Luffy', body: "I'm the Pirate King!", upvotes: 100},
+        {author: 'Black Beard', body: "No, I'm the Pirate King!", upvotes: 25}
+      ]
     });
     $scope.title = '';
     $scope.link = '';
@@ -54,5 +68,14 @@ function MainCtrl($scope,postService){
   function incrementUpvotes(post){
     post.upvotes += 1;
   }
+}
 
+// Posts Controller
+function PostsCtrl($scope, $stateParams, postService){
+  $scope.post = postService.posts[$stateParams.id]
+  $scope.incrementUpvotes = incrementUpvotes;
+
+  function incrementUpvotes(comment){
+    comment.upvotes += 1;
+  }
 }
