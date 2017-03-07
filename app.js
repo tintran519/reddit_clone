@@ -49,6 +49,8 @@ function MainCtrl($scope,postService){
   $scope.posts = postService.posts
   $scope.addPost = addPost;
   $scope.incrementUpvotes = incrementUpvotes;
+  $scope.selectPost = selectPost;
+
 
   function addPost(){
     if(!$scope.title || $scope.title === '') return;
@@ -68,11 +70,15 @@ function MainCtrl($scope,postService){
   function incrementUpvotes(post){
     post.upvotes += 1;
   }
+
+  function selectPost(post){
+    return $scope.posts.indexOf(post);
+  }
 }
 
 // Posts Controller
 function PostsCtrl($scope, $stateParams, postService){
-  $scope.post = postService.posts[$stateParams.id]
+  $scope.post = postService.posts[$stateParams.id];
   $scope.incrementUpvotes = incrementUpvotes;
 
   function incrementUpvotes(comment){
