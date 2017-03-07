@@ -32,12 +32,12 @@ function AppRouter($stateProvider, $urlRouterProvider){
 function postService(){
   var postService = {
     posts: [
-    {title: 'post 1', upvotes: 5},
-    {title: 'post 2', upvotes: 2},
-    {title: 'post 3', upvotes: 15},
-    {title: 'post 4', upvotes: 9},
-    {title: 'post 5', upvotes: 4},
-    {title: 'new guy', upvotes: 19}
+    {title: 'post 1', comments:[], upvotes: 5},
+    {title: 'post 2', comments:[], upvotes: 2},
+    {title: 'post 3', comments:[], upvotes: 15},
+    {title: 'post 4', comments:[], upvotes: 9},
+    {title: 'post 5', comments:[], upvotes: 4},
+    {title: 'new guy', comments:[], upvotes: 19}
     ]
   };
   return postService;
@@ -49,6 +49,8 @@ function MainCtrl($scope,postService){
   $scope.posts = postService.posts
   $scope.addPost = addPost;
   $scope.incrementUpvotes = incrementUpvotes;
+  $scope.selectPost = selectPost;
+
 
   function addPost(){
     if(!$scope.title || $scope.title === '') return;
@@ -68,14 +70,29 @@ function MainCtrl($scope,postService){
   function incrementUpvotes(post){
     post.upvotes += 1;
   }
+
+  function selectPost(post){
+    return $scope.posts.indexOf(post);
+  }
 }
 
 // Posts Controller
 function PostsCtrl($scope, $stateParams, postService){
-  $scope.post = postService.posts[$stateParams.id]
+  $scope.post = postService.posts[$stateParams.id];
   $scope.incrementUpvotes = incrementUpvotes;
+  $scope.addComment = addComment;
 
   function incrementUpvotes(comment){
     comment.upvotes += 1;
+  }
+
+  function addComment(){
+    if($scope.body === '') return;
+    $scope.post.comments.push({
+      body: $scope.body,
+      author: 'user',
+      upvotes: 0
+    });
+    $scope.body = '';
   }
 }
