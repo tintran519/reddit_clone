@@ -36,8 +36,8 @@ var preload = function(req, res, next, id){
 var show = function(req, res, next){
   req.post.populate('comments', function(err, post){
     if(err) return next(err);
-
-    res.json(req.post);
+    console.log('here is the post', post);
+    res.json(post);
   })
 }
 
