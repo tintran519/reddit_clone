@@ -14,9 +14,10 @@ router.get('/posts/:post',          PostCtrl.show);
 router.put('/posts/:post/upvote',   PostCtrl.update);
 
 // Comments routes
+router.get('/posts/:post/comments/', CommentCtrl.index);
+router.get('/posts/:post/comments/:comments', CommentCtrl.show);
 router.param('comments',                              CommentCtrl.preload);
 router.post('/posts/:post/comments',                  CommentCtrl.create);
 router.put('/posts/:post/comments/:comments/upvote',  CommentCtrl.update);
-router.get('/posts/:post/comments/', CommentCtrl.index)
 
 module.exports = router;

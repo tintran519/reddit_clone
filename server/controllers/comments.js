@@ -4,10 +4,8 @@ var create = function(req, res, next){
   var comment = new Comment(req.body);
   // Add the post id to the comment schema
   comment.post = req.post;
-console.log('req',req);
   comment.save(function(err, comment){
     if(err) return next(err);
-console.log(comment);
     // save and add comment to post.comments array
     req.post.comments.push(comment);
     // save updated post
@@ -19,7 +17,7 @@ console.log(comment);
   })
 }
 
-var preload = function(req, res, next, id){
+var preload = function(req, res, next, id){console.log('here is the id',id)
   var query = Comment.findById(id);
 
   query.exec(function(err, comment){
@@ -27,7 +25,6 @@ var preload = function(req, res, next, id){
     if(!comment) return next(new Error('can\'t find comment'));
 
     req.comment = comment;
-    console.log('hello',req.comment)
     return next();
   })
 }
@@ -48,9 +45,15 @@ var index = function(req,res,next){
   })
 }
 
+var show = function(req,res,next){
+  console.log('show is working',req.comment)
+  res.json(req.comment);
+}
+
 module.exports = {
   preload: preload,
   index: index,
+  show: show,
   update: update,
   create: create
 }
