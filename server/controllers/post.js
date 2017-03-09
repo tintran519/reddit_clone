@@ -21,6 +21,7 @@ var create = function(req, res, next){
 }
 
 var preload = function(req, res, next, id){
+  // find selected Post
   var query = Post.findById(id);
 
   query.exec(function(err, post){
@@ -32,13 +33,26 @@ var preload = function(req, res, next, id){
   })
 }
 
-var show = function(req, res){
-  res.json(req.post);
+var show = function(req, res, next){
+  req.post.populate('comments', function(err, post){
+    if(err) return next(err);
+
+    res.json(req.post);
+  })
+}
+
+var update = function(req, res, next){
+  req.post.upvote(function(err, post){
+    if(err) return next(err);
+
+    res.json(post);
+  })
 }
 
 module.exports = {
   index: index,
   create: create,
   preload: preload,
-  show: show
+  show: show,
+  update: update
 }

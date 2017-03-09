@@ -1,0 +1,56 @@
+var Comment = require('../models/Comments')
+
+var create = function(req, res, next){
+  var comment = new Comment(req.body);
+  // Add the post id to the comment schema
+  comment.post = req.post;
+console.log('req',req);
+  comment.save(function(err, comment){
+    if(err) return next(err);
+console.log(comment);
+    // save and add comment to post.comments array
+    req.post.comments.push(comment);
+    // save updated post
+    req.post.save(function(err, post){
+      if(err) return next(err);
+
+      res.json(comment);
+    })
+  })
+}
+
+var preload = function(req, res, next, id){
+  var query = Comment.findById(id);
+
+  query.exec(function(err, comment){
+    if(err) return next(err);
+    if(!comment) return next(new Error('can\'t find comment'));
+
+    req.comment = comment;
+    console.log('hello',req.comment)
+    return next();
+  })
+}
+
+var update = function(req, res, next){
+  req.comment.upvote(function(err, comment){
+    if(err) return next(err);
+
+    res.json(comment);
+  })
+}
+
+var index = function(req,res,next){
+  Comment.find({},function(err,comments){
+    if(err) return next(err);
+
+    res.json(comments);
+  })
+}
+
+module.exports = {
+  preload: preload,
+  index: index,
+  update: update,
+  create: create
+}
