@@ -4,7 +4,9 @@ var router = new express.Router();
 // Require controllers
 var PostCtrl = require('../controllers/post');
 var CommentCtrl = require('../controllers/comments');
-// router.get('/',function(req,res,next){res.render('index')})
+
+// Index route
+router.get('/',function(req,res,next){res.render('index')})
 
 // Posts routes
 router.get('/posts',                PostCtrl.index);

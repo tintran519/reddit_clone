@@ -10,6 +10,7 @@ app.controller("PostsCtrl", PostsCtrl)
 MainCtrl.inject = ['$scope', 'postService']
 AppRouter.inject = ['$stateProvider', '$urlRouterProvider']
 PostsCtrl.inject = ['$scope', '$stateParams', 'postService']
+postService.inject = ['$http']
 
 // States/Routes
 function AppRouter($stateProvider, $urlRouterProvider){
@@ -19,7 +20,13 @@ function AppRouter($stateProvider, $urlRouterProvider){
     .state('home', {
       url: '/home',
       templateUrl: '/home.html',
-      controller: 'MainCtrl'
+      controller: 'MainCtrl',
+      // ensure all posts are queried before state loads
+      resolve: {
+        postPromise: ['postService', function(posts){
+          return posts.getAll()
+        }]
+      }
     })
     .state('posts', {
       url: '/posts/{id}',
@@ -29,16 +36,21 @@ function AppRouter($stateProvider, $urlRouterProvider){
 }
 
 // Service controller
-function postService(){
+function postService($http){
   var postService = {
     posts: [
-    {title: 'post 1', comments:[], upvotes: 5},
-    {title: 'post 2', comments:[], upvotes: 2},
-    {title: 'post 3', comments:[], upvotes: 15},
-    {title: 'post 4', comments:[], upvotes: 9},
-    {title: 'post 5', comments:[], upvotes: 4},
-    {title: 'new guy', comments:[], upvotes: 19}
-    ]
+      {title: 'post 1', comments:[], upvotes: 5},
+      {title: 'post 2', comments:[], upvotes: 2},
+      {title: 'post 3', comments:[], upvotes: 15},
+      {title: 'post 4', comments:[], upvotes: 9},
+      {title: 'post 5', comments:[], upvotes: 4},
+      {title: 'new guy', comments:[], upvotes: 19}
+    ],
+    getAll: function(){
+      return $http.get('/posts').success(function(data){
+        angular.copy(data, postService.posts)
+      })
+    }
   };
   return postService;
 }
