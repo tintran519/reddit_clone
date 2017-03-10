@@ -57,6 +57,13 @@ function postService($http){
         // push to current array to allow immediate display
         postService.posts.push(data);
       });
+    },
+    upvote: function(post){
+      return $http.put(`/posts/${post._id}/upvote`)
+        .success(function(data){
+          // update client to display changes
+          post.upvotes += 1;
+        });
     }
   };
 
@@ -83,7 +90,8 @@ function MainCtrl($scope,postService){
   }
 
   function incrementUpvotes(post){
-    post.upvotes += 1;
+    // call function to update backend upvote
+    postService.upvote(post);
   }
 
   function selectPost(post){
