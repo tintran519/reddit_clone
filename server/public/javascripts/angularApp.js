@@ -48,10 +48,18 @@ function postService($http){
     ],
     getAll: function(){
       return $http.get('/posts').success(function(data){
+        // retrieves all posts from backend and replaces posts array with this new list
         angular.copy(data, postService.posts)
       })
+    },
+    create: function(post){
+      return $http.post('/posts', post).success(function(data){
+        // push to current array to allow immediate display
+        postService.posts.push(data);
+      });
     }
   };
+
   return postService;
 }
 
@@ -66,14 +74,9 @@ function MainCtrl($scope,postService){
 
   function addPost(){
     if(!$scope.title || $scope.title === '') return;
-    $scope.posts.push({
+    postService.create({
       title: $scope.title,
       link: $scope.link,
-      upvotes: 0,
-      comments: [
-        {author: 'Luffy', body: "I'm the Pirate King!", upvotes: 100},
-        {author: 'Black Beard', body: "No, I'm the Pirate King!", upvotes: 25}
-      ]
     });
     $scope.title = '';
     $scope.link = '';
