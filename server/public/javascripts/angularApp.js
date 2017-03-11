@@ -9,7 +9,7 @@ app.controller("PostsCtrl", PostsCtrl)
 // Injections
 MainCtrl.inject = ['$scope', 'postService']
 AppRouter.inject = ['$stateProvider', '$urlRouterProvider']
-PostsCtrl.inject = ['$scope', '$stateParams', 'postService']
+PostsCtrl.inject = ['$scope', 'postService', 'postPromise']
 postService.inject = ['$http']
 
 // States/Routes
@@ -23,15 +23,20 @@ function AppRouter($stateProvider, $urlRouterProvider){
       controller: 'MainCtrl',
       // ensure all posts are queried before state loads
       resolve: {
-        postPromise: ['postService', function(posts){
-          return posts.getAll()
+        postPromise: ['postService', function(postService){
+          return postService.getAll()
         }]
       }
     })
     .state('posts', {
       url: '/posts/{id}',
       templateUrl: '/posts.html',
-      controller: 'PostsCtrl'
+      controller: 'PostsCtrl',
+      resolve: {
+        postPromise: ['$stateParams', 'postService', function($stateParams, postService){
+          return postService.get($stateParams.id);
+        }]
+      }
     })
 }
 
@@ -51,6 +56,12 @@ function postService($http){
         // retrieves all posts from backend and replaces posts array with this new list
         angular.copy(data, postService.posts)
       })
+    },
+    get: function(id){
+      return $http.get(`/posts/${id}`)
+        .then(function(res){
+          return res.data;
+        })
     },
     create: function(post){
       return $http.post('/posts', post).success(function(data){
@@ -100,8 +111,8 @@ function MainCtrl($scope,postService){
 }
 
 // Posts Controller
-function PostsCtrl($scope, $stateParams, postService){
-  $scope.post = postService.posts[$stateParams.id];
+function PostsCtrl($scope, postService, postPromise){
+  $scope.post = postPromise;
   $scope.incrementUpvotes = incrementUpvotes;
   $scope.addComment = addComment;
 
