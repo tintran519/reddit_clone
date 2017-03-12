@@ -78,6 +78,12 @@ function postService($http){
     },
     addComment: function(id, comment){
       return $http.post(`/posts/${id}/comments`, comment);
+    },
+    upvoteComment: function(post, comment){
+      return $http.put(`/posts/${post._id}/comments/${comment._id}/upvote`)
+        .success(function(data){
+          comment.upvotes += 1;
+        });
     }
   };
 
@@ -116,11 +122,11 @@ function MainCtrl($scope,postService){
 // Posts Controller
 function PostsCtrl($scope, postService, postPromise){
   $scope.post = postPromise;
-  $scope.incrementUpvotes = incrementUpvotes;
+  $scope.incrementUpvotesComment = incrementUpvotesComment;
   $scope.addComment = addComment;
 
-  function incrementUpvotes(comment){
-    comment.upvotes += 1;
+  function incrementUpvotesComment(comment){
+    postService.upvoteComment(postPromise, comment)
   }
 
   function addComment(){
