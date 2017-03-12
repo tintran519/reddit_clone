@@ -75,6 +75,15 @@ function postService($http){
           // update client to display changes
           post.upvotes += 1;
         });
+    },
+    addComment: function(id, comment){
+      return $http.post(`/posts/${id}/comments`, comment);
+    },
+    upvoteComment: function(post, comment){
+      return $http.put(`/posts/${post._id}/comments/${comment._id}/upvote`)
+        .success(function(data){
+          comment.upvotes += 1;
+        });
     }
   };
 
@@ -113,20 +122,21 @@ function MainCtrl($scope,postService){
 // Posts Controller
 function PostsCtrl($scope, postService, postPromise){
   $scope.post = postPromise;
-  $scope.incrementUpvotes = incrementUpvotes;
+  $scope.incrementUpvotesComment = incrementUpvotesComment;
   $scope.addComment = addComment;
 
-  function incrementUpvotes(comment){
-    comment.upvotes += 1;
+  function incrementUpvotesComment(comment){
+    postService.upvoteComment(postPromise, comment)
   }
 
   function addComment(){
     if($scope.body === '') return;
-    $scope.post.comments.push({
+    postService.addComment(postPromise._id,{
       body: $scope.body,
       author: 'user',
-      upvotes: 0
+    }).success(function(comment){
+      $scope.post.comments.push(comment);
     });
     $scope.body = '';
-  }
+  };
 }
